@@ -1526,9 +1526,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin)
 			bed->wakeUp(this);
 		}
 
-		if (isLogin) {
-			SPDLOG_INFO("{} has logged in", name);
-		}
+		SPDLOG_INFO("{} has logged in", name)
 
 		if (guild) {
 			guild->addMember(this);
@@ -1629,13 +1627,19 @@ void Player::onRemoveCreature(Creature* creature, bool isLogout)
 
 	if (creature == this) {
 		if (isLogout) {
+			if (party) {
+				party->leaveParty(this);
+			}
+			if (guild) {
+				guild->removeMember(this);
+			}
 			loginPosition = getPosition();
+			lastLogout = time(nullptr);
 			SPDLOG_INFO("{} has logged out", getName());
 			g_chat().removeUserFromAllChannels(*this);
 			clearPartyInvitations();
+			IOLoginData::updateOnlineStatus(guid, false);
 		}
-
-		lastLogout = time(nullptr);
 
 		if (eventWalk != 0) {
 			setFollowCreature(nullptr);
@@ -1646,16 +1650,6 @@ void Player::onRemoveCreature(Creature* creature, bool isLogout)
 		}
 
 		closeShopWindow();
-
-		if (party && isLogout) {
-			party->leaveParty(this);
-		}
-
-		if (guild && isLogout) {
-			guild->removeMember(this);
-		}
-
-		IOLoginData::updateOnlineStatus(guid, false);
 
 		bool saved = false;
 		for (uint32_t tries = 0; tries < 3; ++tries) {
