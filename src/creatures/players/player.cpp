@@ -2765,6 +2765,9 @@ void Player::despawn()
 		}
 
 		spectator->onRemoveCreature(this, false);
+		// Remove player from spectator target list
+		spectator->setAttackedCreature(nullptr);
+		spectator->setFollowCreature(nullptr);
 	}
 
 	tile->removeCreature(this);
