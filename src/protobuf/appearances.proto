@@ -117,7 +117,7 @@ message Appearance {
 	repeated FrameGroup frame_group = 2;
 	optional AppearanceFlags flags = 3;
 	optional string name = 4;
-	optional string description = 5;
+	optional bytes description = 5;
 }
 
 message AppearanceFlags {
